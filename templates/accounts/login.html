@@ -1,0 +1,28 @@
+{% extends 'base_auth.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<section class="container" style="max-width: 480px;">
+    <article class="form-card">
+        <h2><i class="fas fa-sign-in-alt me-2 text-primary"></i>Sign In</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+            {% for field in form %}
+            <p class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<span class="text-danger small">{{ field.errors.0 }}</span>{% endif %}
+            </p>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary-custom w-100 mt-2">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+        </form>
+        <p class="text-center text-muted small mt-3 mb-0">
+            Don't have an account? <a href="{% url 'register' %}">Register here</a>
+        </p>
+    </article>
+</section>
+{% endblock %}

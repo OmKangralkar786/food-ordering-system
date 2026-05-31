@@ -1,0 +1,26 @@
+import os
+
+from channels.routing import ProtocolTypeRouter, URLRouter
+
+from django.core.asgi import get_asgi_application
+
+from channels.auth import AuthMiddlewareStack
+
+import orders.routing
+
+os.environ.setdefault(
+    'DJANGO_SETTINGS_MODULE',
+    'food_ordering_system.settings'
+)
+
+application = ProtocolTypeRouter({
+
+    "http": get_asgi_application(),
+
+    "websocket": AuthMiddlewareStack(
+
+        URLRouter(
+            orders.routing.websocket_urlpatterns
+        )
+    ),
+})

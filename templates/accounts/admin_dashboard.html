@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <h1><i class="fas fa-gauge-high me-2"></i>Admin Dashboard</h1>
+        <p class="text-muted mb-0">Manage restaurants, menu, delivery, and analytics</p>
+    </section>
+</header>
+
+<section class="section-padding pt-0">
+    <section class="container" style="max-width: 640px;">
+        <ul class="list-unstyled admin-dashboard-list">
+            <li>
+                <a href="{% url 'create_restaurant' %}" class="admin-dashboard-item">
+                    <span class="admin-dashboard-icon"><i class="fas fa-store"></i></span>
+                    <span class="admin-dashboard-text">
+                        <strong>Add Restaurant</strong>
+                        <small>Register a new restaurant on the platform</small>
+                    </span>
+                    <i class="fas fa-chevron-right admin-dashboard-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'add_menu_item' %}" class="admin-dashboard-item">
+                    <span class="admin-dashboard-icon"><i class="fas fa-utensils"></i></span>
+                    <span class="admin-dashboard-text">
+                        <strong>Add Menu Item</strong>
+                        <small>Add dishes to a restaurant menu</small>
+                    </span>
+                    <i class="fas fa-chevron-right admin-dashboard-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'delivery_dashboard' %}" class="admin-dashboard-item">
+                    <span class="admin-dashboard-icon"><i class="fas fa-motorcycle"></i></span>
+                    <span class="admin-dashboard-text">
+                        <strong>Delivery Dashboard</strong>
+                        <small>View and manage active deliveries</small>
+                    </span>
+                    <i class="fas fa-chevron-right admin-dashboard-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'user_list' %}" class="admin-dashboard-item">
+                    <span class="admin-dashboard-icon"><i class="fas fa-users"></i></span>
+                    <span class="admin-dashboard-text">
+                        <strong>All Users</strong>
+                        <small>View every customer and registered account</small>
+                    </span>
+                    <i class="fas fa-chevron-right admin-dashboard-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dashboard' %}" class="admin-dashboard-item">
+                    <span class="admin-dashboard-icon"><i class="fas fa-chart-line"></i></span>
+                    <span class="admin-dashboard-text">
+                        <strong>Analytics</strong>
+                        <small>Orders, users, revenue, and restaurant stats</small>
+                    </span>
+                    <i class="fas fa-chevron-right admin-dashboard-arrow"></i>
+                </a>
+            </li>
+        </ul>
+    </section>
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Delivery Dashboard{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <h1><i class="fas fa-motorcycle me-2"></i>Delivery Dashboard</h1>
+        <p class="text-muted mb-0">Manage active deliveries</p>
+    </section>
+</header>
+<section class="section-padding pt-0">
+    <section class="container">
+        {% for order in orders %}
+        <article class="delivery-order-card">
+            <section class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <section>
+                    <h4 class="mb-1">Order #{{ order.id }}</h4>
+                    <span class="status-badge">{{ order.status }}</span>
+                </section>
+                <strong class="price" style="font-size:1.25rem;">₹ {{ order.total_amount }}</strong>
+            </section>
+        </article>
+        {% empty %}
+        <section class="empty-state">
+            <i class="fas fa-motorcycle d-block"></i>
+            <h4>No active deliveries</h4>
+            <p>Orders out for delivery will appear here.</p>
+        </section>
+        {% endfor %}
+    </section>
+</section>
+{% endblock %}

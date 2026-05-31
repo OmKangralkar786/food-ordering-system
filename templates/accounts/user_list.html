@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}All Users{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <section class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <section>
+                <h1><i class="fas fa-users me-2"></i>All Users</h1>
+                <p class="text-muted mb-0">{{ total_count }} registered — {{ customer_count }} customers, {{ staff_count }} staff</p>
+            </section>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-custom btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </section>
+    </section>
+</header>
+
+<section class="section-padding pt-0">
+    <section class="container">
+        <form method="GET" class="search-bar mb-4">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search by name, username, email, or phone..." value="{{ query }}">
+                <button class="btn btn-search" type="submit"><i class="fas fa-search me-1"></i> Search</button>
+            </div>
+        </form>
+
+        <article class="analytics-panel p-0 overflow-hidden">
+            <section class="table-responsive">
+                <table class="table analytics-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <strong>{{ u.username }}</strong>
+                                {% if u.get_full_name %}<br><small class="text-muted">{{ u.get_full_name }}</small>{% endif %}
+                            </td>
+                            <td>{{ u.email|default:"—" }}</td>
+                            <td>{{ u.phone|default:"—" }}</td>
+                            <td class="small" style="max-width:200px;">{{ u.address|default:"—"|truncatechars:50 }}</td>
+                            <td>
+                                <span class="analytics-status-pill {% if u.role == 'customer' %}status-pending{% else %}status-preparing{% endif %}">
+                                    {{ u.get_role_display|default:u.role }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">{{ u.date_joined|date:"M d, Y" }}</td>
+                            <td>
+                                {% if u.is_superuser %}
+                                <span class="badge bg-danger">Superuser</span>
+                                {% elif u.is_staff %}
+                                <span class="badge bg-primary">Staff</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Customer</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                {% if query %}No users found for "{{ query }}".{% else %}No users registered yet.{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </article>
+    </section>
+</section>
+{% endblock %}

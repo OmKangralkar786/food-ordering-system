@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Restaurants{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <h1><i class="fas fa-store me-2"></i>Restaurants</h1>
+        <p class="text-muted mb-0">Discover great places to eat near you</p>
+    </section>
+</header>
+<section class="section-padding pt-0">
+    <section class="container">
+        <form method="GET" action="{% url 'search_restaurants' %}" class="search-bar mb-4">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search by name or cuisine...">
+                <button class="btn btn-search" type="submit"><i class="fas fa-search me-1"></i> Search</button>
+            </div>
+        </form>
+        <ul class="row g-4 list-unstyled">
+            {% for restaurant in restaurants %}
+            <li class="col-md-6 col-lg-4">
+                <article class="food-card card h-100 border-0">
+                    <img src="{{ restaurant.image.url }}" class="card-img-top" alt="{{ restaurant.name }}">
+                    <section class="card-body">
+                        <span class="cuisine-badge">{{ restaurant.cuisine }}</span>
+                        <h5 class="card-title mt-2">{{ restaurant.name }}</h5>
+                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i>{{ restaurant.address }}</p>
+                        {% if restaurant.rating %}<p class="mb-0"><i class="fas fa-star text-warning"></i> {{ restaurant.rating }}</p>{% endif %}
+                    </section>
+                    <footer class="card-actions">
+                        <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn btn-primary-custom btn-sm">
+                            <i class="fas fa-utensils me-1"></i>View Menu
+                        </a>
+                        <a href="{% url 'add_review' restaurant.id %}" class="btn btn-outline-custom btn-sm"><i class="fas fa-star me-1"></i>Review</a>
+                    </footer>
+                </article>
+            </li>
+            {% empty %}
+            <li class="col-12 empty-state">
+                <i class="fas fa-store-slash d-block"></i>
+                <h4>No restaurants yet</h4>
+                <p>No restaurants available right now.</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+</section>
+{% endblock %}

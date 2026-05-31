@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="mb-4">Delicious food,<br>delivered fast.</h1>
+                <p class="lead mb-4">Discover top restaurants, explore menus, and get your favorite meals delivered to your door.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'menu_list' %}" class="btn btn-hero">
+                        <i class="fas fa-utensils me-2"></i>Order Now
+                    </a>
+                    <a href="{% url 'restaurant_list' %}" class="btn btn-hero-outline">
+                        <i class="fas fa-store me-2"></i>Browse Restaurants
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <i class="fas fa-pizza-slice" style="font-size: 12rem; opacity: 0.25;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Why choose FoodHub?</h2>
+            <p class="text-muted">Everything you need for a great food ordering experience</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-tile">
+                    <i class="fas fa-bolt"></i>
+                    <h5>Fast Delivery</h5>
+                    <p class="text-muted small mb-0">Track your order in real-time and get updates at every step.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-tile">
+                    <i class="fas fa-star"></i>
+                    <h5>Top Restaurants</h5>
+                    <p class="text-muted small mb-0">Browse curated restaurants with ratings and reviews.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-tile">
+                    <i class="fas fa-tags"></i>
+                    <h5>Great Deals</h5>
+                    <p class="text-muted small mb-0">Apply coupons at checkout and save on every order.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding bg-white">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Get started</h2>
+        </div>
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-3">
+                <a href="{% url 'recommendations' %}" class="text-decoration-none">
+                    <div class="feature-tile">
+                        <i class="fas fa-fire"></i>
+                        <h5>Popular Items</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a href="{% url 'favorites' %}" class="text-decoration-none">
+                    <div class="feature-tile">
+                        <i class="fas fa-heart me-1"></i>
+                        <h5>Favorites</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a href="{% url 'order_history' %}" class="text-decoration-none">
+                    <div class="feature-tile">
+                        <i class="fas fa-history"></i>
+                        <h5>Order History</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a href="{% url 'view_cart' %}" class="text-decoration-none">
+                    <div class="feature-tile">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h5>View Cart</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a href="{% url 'support_chat' %}" class="text-decoration-none">
+                    <div class="feature-tile">
+                        <i class="fas fa-headset"></i>
+                        <h5>Get Support</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

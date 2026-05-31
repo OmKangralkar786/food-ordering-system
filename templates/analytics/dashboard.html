@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<header class="analytics-hero">
+    <section class="container">
+        <section class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <section>
+                <p class="analytics-hero-label mb-1"><i class="fas fa-chart-line me-2"></i>Analytics</p>
+                <h1 class="analytics-hero-title mb-2">Business Overview</h1>
+                <p class="analytics-hero-sub mb-0">Track orders, revenue, and platform growth at a glance.</p>
+            </section>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-hero-outline btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </section>
+    </section>
+</header>
+
+<section class="section-padding pt-0">
+    <section class="container">
+        <!-- Primary stats -->
+        <ul class="row g-4 list-unstyled analytics-stat-grid mb-4">
+            <li class="col-sm-6 col-xl-3">
+                <article class="analytics-stat-card analytics-stat-orders">
+                    <span class="analytics-stat-icon"><i class="fas fa-shopping-bag"></i></span>
+                    <section class="analytics-stat-body">
+                        <p class="analytics-stat-label">Total Orders</p>
+                        <h2 class="analytics-stat-value">{{ total_orders }}</h2>
+                    </section>
+                </article>
+            </li>
+            <li class="col-sm-6 col-xl-3">
+                <article class="analytics-stat-card analytics-stat-revenue">
+                    <span class="analytics-stat-icon"><i class="fas fa-indian-rupee-sign"></i></span>
+                    <section class="analytics-stat-body">
+                        <p class="analytics-stat-label">Total Revenue</p>
+                        <h2 class="analytics-stat-value">₹{{ revenue|floatformat:0 }}</h2>
+                    </section>
+                </article>
+            </li>
+            <li class="col-sm-6 col-xl-3">
+                <article class="analytics-stat-card analytics-stat-users">
+                    <span class="analytics-stat-icon"><i class="fas fa-users"></i></span>
+                    <section class="analytics-stat-body">
+                        <p class="analytics-stat-label">Total Users</p>
+                        <h2 class="analytics-stat-value">{{ total_users }}</h2>
+                    </section>
+                </article>
+            </li>
+            <li class="col-sm-6 col-xl-3">
+                <article class="analytics-stat-card analytics-stat-restaurants">
+                    <span class="analytics-stat-icon"><i class="fas fa-store"></i></span>
+                    <section class="analytics-stat-body">
+                        <p class="analytics-stat-label">Restaurants</p>
+                        <h2 class="analytics-stat-value">{{ total_restaurants }}</h2>
+                    </section>
+                </article>
+            </li>
+        </ul>
+
+        <!-- Secondary metrics + status breakdown -->
+        <section class="row g-4 mb-4">
+            <section class="col-lg-4">
+                <article class="analytics-panel h-100">
+                    <h3 class="analytics-panel-title"><i class="fas fa-receipt me-2"></i>Order Insights</h3>
+                    <ul class="list-unstyled analytics-mini-stats mb-0">
+                        <li>
+                            <span>Average order value</span>
+                            <strong>₹{{ avg_order_value|floatformat:2 }}</strong>
+                        </li>
+                        <li>
+                            <span>Delivered</span>
+                            <strong class="text-success">{{ delivered_orders }}</strong>
+                        </li>
+                        <li>
+                            <span>Pending</span>
+                            <strong class="text-warning">{{ pending_orders }}</strong>
+                        </li>
+                        <li>
+                            <span>Preparing</span>
+                            <strong>{{ preparing_orders }}</strong>
+                        </li>
+                        <li>
+                            <span>Out for delivery</span>
+                            <strong class="text-primary">{{ delivery_orders }}</strong>
+                        </li>
+                    </ul>
+                </article>
+            </section>
+            <section class="col-lg-8">
+                <article class="analytics-panel h-100">
+                    <h3 class="analytics-panel-title"><i class="fas fa-chart-pie me-2"></i>Orders by Status</h3>
+                    {% if status_breakdown %}
+                    <ul class="list-unstyled analytics-status-list mb-0">
+                        {% for item in status_breakdown %}
+                        <li class="analytics-status-row">
+                            <section class="d-flex justify-content-between mb-1">
+                                <span>{{ item.status }}</span>
+                                <strong>
+                                    {{ item.count }}
+                                    {% if total_orders %}
+                                    {% widthratio item.count total_orders 100 as pct %}
+                                    ({{ pct }}%)
+                                    {% endif %}
+                                </strong>
+                            </section>
+                            <span class="analytics-progress">
+                                <span class="analytics-progress-bar status-{{ item.status|slugify }}"
+                                      style="width: {% if total_orders %}{% widthratio item.count total_orders 100 %}%{% else %}0{% endif %};"></span>
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted mb-0">No orders yet to display status breakdown.</p>
+                    {% endif %}
+                </article>
+            </section>
+        </section>
+
+        <!-- Recent orders -->
+        <article class="analytics-panel">
+            <section class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <h3 class="analytics-panel-title mb-0"><i class="fas fa-clock-rotate-left me-2"></i>Recent Orders</h3>
+                <span class="badge rounded-pill analytics-badge">{{ recent_orders|length }} latest</span>
+            </section>
+            {% if recent_orders %}
+            <section class="table-responsive">
+                <table class="table analytics-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td><strong>#{{ order.id }}</strong></td>
+                            <td>{{ order.user.username }}</td>
+                            <td class="fw-semibold text-primary">₹{{ order.total_amount }}</td>
+                            <td>
+                                <span class="analytics-status-pill status-{{ order.status|slugify }}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="text-muted">{{ order.created_at|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            {% else %}
+            <section class="empty-state py-4">
+                <i class="fas fa-inbox d-block"></i>
+                <p class="mb-0">No orders placed yet.</p>
+            </section>
+            {% endif %}
+        </article>
+    </section>
+</section>
+{% endblock %}

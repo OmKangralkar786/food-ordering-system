@@ -1,0 +1,350 @@
+
+
+{% extends 'base.html' %}
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+
+<header class="page-header">
+    <section class="container">
+        <h1>
+            <i class="fas fa-shopping-cart me-2"></i>
+            Your Cart
+        </h1>
+    </section>
+</header>
+
+<section class="section-padding pt-0">
+
+    <section class="container">
+
+        {% if items %}
+
+        <section class="row g-4">
+
+            <!-- CART TABLE -->
+            <section class="col-lg-8">
+
+                <section class="cart-table-wrap">
+
+                    <table class="table table-hover mb-0">
+
+                        <thead>
+                            <tr>
+                                <th>Food</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Add QTY</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for item in items %}
+
+                            <tr>
+
+                                <!-- FOOD -->
+                                <td>
+                                    <strong>
+                                        {{ item.menu_item.name }}
+                                    </strong>
+                                </td>
+
+                                <!-- QUANTITY -->
+                                <td>
+                                    {{ item.quantity }}
+                                </td>
+
+                                <!-- TOTAL -->
+                                <td class="price" style="font-size:1rem;">
+                                    ₹ {{ item.total_price }}
+                                </td>
+
+                                <!-- ADD / MINUS -->
+                                <td>
+
+                                    <div class="d-flex align-items-center gap-2">
+
+                                        <!-- PLUS BUTTON -->
+                                        <a href="{% url 'add_to_cart' item.menu_item.id %}"
+                                           class="btn btn-sm btn-success">
+
+                                            <i class="fas fa-plus"></i>
+
+                                        </a>
+
+                                        <!-- MINUS BUTTON -->
+                                        <a href="{% url 'decrease_cart_item' item.id %}"
+                                           class="btn btn-sm btn-warning">
+
+                                            <i class="fas fa-minus"></i>
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                                <!-- DELETE BUTTON -->
+                                <td>
+
+                                    <a href="{% url 'remove_from_cart' item.id %}"
+                                       class="btn btn-sm btn-outline-danger">
+
+                                        <i class="fas fa-trash"></i>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </section>
+
+            <!-- ORDER SUMMARY -->
+            <!-- ORDER SUMMARY -->
+<aside class="col-lg-4">
+
+    <section class="cart-summary">
+
+        <h5 class="fw-bold mb-3">
+            Order Summary
+        </h5>
+
+        <!-- SUBTOTAL -->
+        <p class="d-flex justify-content-between mb-2">
+
+            <span>Subtotal</span>
+
+            <span>₹ {{ subtotal }}</span>
+
+        </p>
+
+        <!-- DISCOUNT -->
+        {% if discount %}
+
+        <p class="d-flex justify-content-between mb-2 text-success">
+
+            <span>
+                Discount
+                {% if applied_coupon_code %}
+                ({{ applied_coupon_code }})
+                {% endif %}
+            </span>
+
+            <span>
+                - ₹ {{ discount }}
+            </span>
+
+        </p>
+
+        {% endif %}
+
+        <!-- COUPON SECTION -->
+        <section class="coupon-section mt-3 mb-3">
+
+            <h6 class="fw-bold mb-2">
+
+                <i class="fas fa-tags me-1 text-primary"></i>
+
+                Available Coupons
+
+            </h6>
+
+            <!-- APPLIED COUPON -->
+            {% if applied_coupon_code %}
+
+            <article class="coupon-applied-banner mb-3">
+
+                <span>
+
+                    <i class="fas fa-check-circle me-1"></i>
+
+                    <strong>{{ applied_coupon_code }}</strong>
+
+                    applied — saved ₹{{ discount }}
+
+                </span>
+
+                <a href="{% url 'remove_coupon' %}"
+                   class="coupon-remove-link">
+
+                    Remove
+
+                </a>
+
+            </article>
+
+            {% endif %}
+
+            <!-- AVAILABLE COUPONS -->
+            {% if available_coupons %}
+
+            <form method="POST"
+                  action="{% url 'apply_coupon' %}"
+                  id="coupon-form">
+
+                {% csrf_token %}
+
+                <ul class="list-unstyled coupon-list mb-2">
+
+                    {% for coupon in available_coupons %}
+
+                    <li class="coupon-card {% if subtotal < coupon.minimum_amount %}coupon-disabled{% endif %}">
+
+                        <label class="coupon-card-label">
+
+                            <input type="radio"
+                                   name="coupon_id"
+                                   value="{{ coupon.id }}"
+                                   class="coupon-radio"
+
+                                   {% if applied_coupon_id == coupon.id %}
+                                   checked
+                                   {% endif %}
+
+                                   {% if subtotal < coupon.minimum_amount %}
+                                   disabled
+                                   {% endif %}>
+
+                            <span class="coupon-card-body">
+
+                                <!-- COUPON CODE -->
+                                <span class="coupon-code">
+
+                                    {{ coupon.code }}
+
+                                </span>
+
+                                <!-- DISCOUNT -->
+                                <span class="coupon-discount">
+
+                                    ₹{{ coupon.discount }} OFF
+
+                                </span>
+
+                                <!-- DETAILS -->
+                                <span class="coupon-meta">
+
+                                    Min. order ₹{{ coupon.minimum_amount }}
+
+                                    · Valid till {{ coupon.expiry_date|date:"M d, Y" }}
+
+                                </span>
+
+                                <!-- NOT ELIGIBLE -->
+                                {% if subtotal < coupon.minimum_amount %}
+
+                                <span class="coupon-locked">
+
+                                    Not eligible — cart below minimum
+
+                                </span>
+
+                                {% endif %}
+
+                            </span>
+
+                        </label>
+
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+                <!-- APPLY BUTTON -->
+                <button type="submit"
+                        class="btn btn-outline-custom w-100">
+
+                    <i class="fas fa-check me-1"></i>
+
+                    Apply Selected Coupon
+
+                </button>
+
+            </form>
+
+            {% else %}
+
+            <p class="text-muted small mb-0">
+
+                No coupons available right now.
+
+            </p>
+
+            {% endif %}
+
+        </section>
+
+        <!-- FINAL TOTAL -->
+        <p class="total-row d-flex justify-content-between">
+
+            <span>Total</span>
+
+            <span>₹ {{ total }}</span>
+
+        </p>
+
+        <!-- CHECKOUT BUTTON -->
+        <a href="{% url 'checkout' %}"
+           class="btn btn-primary-custom w-100 mt-2">
+
+            <i class="fas fa-lock me-2"></i>
+
+            Proceed to Checkout
+
+        </a>
+
+    </section>
+
+</aside> cc
+
+        </section>
+
+        {% else %}
+
+        <!-- EMPTY CART -->
+        <section class="empty-state">
+
+            <i class="fas fa-shopping-cart d-block"></i>
+
+            <h4>Your cart is empty</h4>
+
+            <p class="mb-3">
+                Add items from a restaurant menu to get started.
+            </p>
+
+            <a href="{% url 'restaurant_list' %}"
+               class="btn btn-primary-custom me-2">
+
+                Browse Restaurants
+
+            </a>
+
+            <a href="{% url 'menu_list' %}"
+               class="btn btn-outline-custom">
+
+                Full Menu
+
+            </a>
+
+        </section>
+
+        {% endif %}
+
+    </section>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Order Success{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <section class="container">
+        <article class="success-card">
+            <span class="success-icon"><i class="fas fa-check"></i></span>
+            <h1 class="text-success fw-bold">Order Placed!</h1>
+            <h3 class="mt-3 text-muted">Order #{{ order.id }}</h3>
+            <p class="mt-3 mb-4">Thank you for ordering with FoodHub. We're preparing your meal.</p>
+            <a href="{% url 'tracking_page' %}" class="btn btn-primary-custom me-2">
+                <i class="fas fa-location-dot me-2"></i>Track Order
+            </a>
+            <a href="{% url 'menu_list' %}" class="btn btn-outline-custom">
+                <i class="fas fa-utensils me-2"></i>Order More
+            </a>
+        </article>
+    </section>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+function showNotification() {
+    if (Notification.permission === "granted") {
+        new Notification("Order Confirmed", {
+            body: "Your order #{{ order.id }} was placed successfully!",
+            icon: "https://cdn-icons-png.flaticon.com/512/1046/1046784.png"
+        });
+    }
+}
+showNotification();
+</script>
+{% endblock %}

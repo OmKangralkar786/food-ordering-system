@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Track Order{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <h1><i class="fas fa-location-dot me-2"></i>Live Order Tracking</h1>
+        <p class="text-muted mb-0">Real-time updates on your delivery</p>
+        {% if latest_order %}
+        <p class="mb-0 mt-2"><span class="badge bg-primary">Tracking Order #{{ latest_order.id }}</span></p>
+        {% endif %}
+    </section>
+</header>
+<section class="section-padding pt-0">
+    <section class="container" style="max-width: 720px;">
+        <article class="tracking-connection-card mb-4" id="connection-card">
+            <span class="tracking-status-dot" id="status-dot"></span>
+            <span id="connection-text">Connecting...</span>
+        </article>
+        <section id="messages" class="tracking-feed tracking-timeline"></section>
+        <section class="empty-state mt-4" id="waiting-msg">
+            <i class="fas fa-spinner fa-pulse d-block"></i>
+            <p>Waiting for order updates...</p>
+            <p class="small text-muted">Place an order or open this page after checkout to see live steps.</p>
+        </section>
+    </section>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = protocol + '//' + window.location.host + '/ws/orders/';
+    const messagesEl = document.getElementById('messages');
+    const waitingEl = document.getElementById('waiting-msg');
+    const connectionText = document.getElementById('connection-text');
+    const statusDot = document.getElementById('status-dot');
+    const connectionCard = document.getElementById('connection-card');
+
+    let socket;
+    let reconnectTimer;
+
+    function setConnectionState(state, text) {
+        connectionText.textContent = text;
+        statusDot.className = 'tracking-status-dot ' + state;
+        connectionCard.className = 'tracking-connection-card mb-4 ' + state;
+    }
+
+    function addUpdate(data) {
+        waitingEl.style.display = 'none';
+        const el = document.createElement('article');
+        el.className = 'tracking-update-item';
+        const time = new Date().toLocaleTimeString();
+        const status = data.status ? '<span class="tracking-update-status">' + data.status + '</span>' : '';
+        el.innerHTML =
+            '<span class="tracking-update-icon"><i class="fas fa-truck"></i></span>' +
+            '<section class="tracking-update-body">' +
+            '<p class="mb-1">' + data.message + '</p>' +
+            '<small class="text-muted">' + time + '</small> ' + status +
+            '</section>';
+        messagesEl.prepend(el);
+    }
+
+    function connect() {
+        setConnectionState('connecting', 'Connecting to live tracking...');
+        socket = new WebSocket(wsUrl);
+
+        socket.onopen = function () {
+            setConnectionState('connected', 'Connected — receiving live updates');
+        };
+
+        socket.onmessage = function (e) {
+            try {
+                addUpdate(JSON.parse(e.data));
+            } catch (err) {
+                addUpdate({ message: e.data, status: '' });
+            }
+        };
+
+        socket.onclose = function () {
+            setConnectionState('disconnected', 'Disconnected — reconnecting in 5s...');
+            reconnectTimer = setTimeout(connect, 5000);
+        };
+
+        socket.onerror = function () {
+            setConnectionState('error',
+                'Could not connect. Run: daphne -b 127.0.0.1 -p 8000 food_ordering_system.asgi:application');
+        };
+    }
+
+    connect();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}{{ restaurant.name }}{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{% url 'restaurant_list' %}">Restaurants</a></li>
+                <li class="breadcrumb-item active">{{ restaurant.name }}</li>
+            </ol>
+        </nav>
+        <section class="row align-items-center g-4">
+            <section class="col-md-4">
+                <img src="{{ restaurant.image.url }}" alt="{{ restaurant.name }}" class="img-fluid rounded-3 shadow" style="max-height:220px;width:100%;object-fit:cover;">
+            </section>
+            <section class="col-md-8">
+                <span class="cuisine-badge">{{ restaurant.cuisine }}</span>
+                <h1 class="mt-2 mb-2">{{ restaurant.name }}</h1>
+                <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ restaurant.address }}</p>
+                {% if restaurant.rating %}
+                <p class="mb-3"><i class="fas fa-star text-warning me-1"></i><strong>{{ restaurant.rating }}</strong> rating</p>
+                {% endif %}
+                <a href="{% url 'add_review' restaurant.id %}" class="btn btn-outline-custom btn-sm">
+                    <i class="fas fa-star me-1"></i>Write a Review
+                </a>
+            </section>
+        </section>
+    </section>
+</header>
+
+<section class="section-padding pt-0">
+    <section class="container">
+        <h2 class="fw-bold mb-4"><i class="fas fa-utensils me-2 text-primary"></i>Menu</h2>
+        <ul class="row g-4 list-unstyled">
+            {% for item in menu_items %}
+            <li class="col-md-6 col-lg-4">
+                <article class="food-card card h-100 border-0">
+                    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                    <section class="card-body">
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <p class="text-muted small">{{ item.description }}</p>
+                        <p class="price">₹ {{ item.price }}</p>
+                    </section>
+                    <footer class="card-actions">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'add_to_cart' item.id %}" class="btn btn-primary-custom btn-sm">
+                            <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                        </a>
+                        <a href="{% url 'add_to_favorites' item.id %}" class="btn btn-outline-custom btn-sm">
+                            <i class="fas fa-heart me-1"></i>Save
+                        </a>
+                        {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary-custom btn-sm">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login to Order
+                        </a>
+                        {% endif %}
+                    </footer>
+                </article>
+            </li>
+            {% empty %}
+            <li class="col-12 empty-state">
+                <i class="fas fa-utensils d-block"></i>
+                <h4>No menu items yet</h4>
+                <p>This restaurant hasn't added dishes yet.</p>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% if reviews %}
+        <h2 class="fw-bold mt-5 mb-4"><i class="fas fa-comments me-2 text-primary"></i>Reviews</h2>
+        <ul class="list-unstyled">
+            {% for review in reviews %}
+            <li class="notification-item mb-3">
+                <strong>{{ review.user.username }}</strong>
+                <span class="ms-2">
+                    {% for i in "12345" %}
+                    <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                    {% endfor %}
+                </span>
+                <p class="mb-0 mt-2">{{ review.comment }}</p>
+                <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

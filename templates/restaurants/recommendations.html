@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Popular{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <h1><i class="fas fa-fire me-2 text-danger"></i>Popular Foods</h1>
+        <p class="text-muted mb-0">Trending dishes loved by our customers</p>
+    </section>
+</header>
+<section class="section-padding pt-0">
+    <section class="container">
+        <ul class="row g-4 list-unstyled">
+            {% for item in popular_items %}
+            <li class="col-md-6 col-lg-4">
+                <article class="food-card card h-100 border-0">
+                    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}" style="height:220px;object-fit:cover;">
+                    <section class="card-body">
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <p class="price mb-3">₹ {{ item.price }}</p>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'add_to_cart' item.id %}" class="btn btn-primary-custom w-100">
+                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                        </a>
+                        {% else %}
+                        <a href="{% url 'login' %}?next={% url 'add_to_cart' item.id %}" class="btn btn-primary-custom w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Order
+                        </a>
+                        {% endif %}
+                    </section>
+                </article>
+            </li>
+            {% empty %}
+            <li class="col-12 empty-state">
+                <i class="fas fa-utensils d-block"></i>
+                <h4>No popular items yet</h4>
+                <p><a href="{% url 'menu_list' %}">Browse the full menu</a></p>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+</section>
+{% endblock %}

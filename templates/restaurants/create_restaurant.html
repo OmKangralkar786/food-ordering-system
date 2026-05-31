@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Add Restaurant{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <section class="container">
+        <article class="form-card" style="max-width: 600px;">
+            <h2><i class="fas fa-plus-circle me-2 text-primary"></i>Add Restaurant</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                <p class="mb-3">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                </p>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary-custom w-100">
+                    <i class="fas fa-store me-2"></i>Create Restaurant
+                </button>
+            </form>
+        </article>
+    </section>
+</section>
+{% endblock %}

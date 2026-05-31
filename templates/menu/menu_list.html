@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Menu{% endblock %}
+{% block content %}
+<header class="page-header">
+    <section class="container">
+        <h1><i class="fas fa-book-open me-2"></i>Menu</h1>
+        <p class="text-muted mb-0">Explore dishes from all restaurants</p>
+    </section>
+</header>
+<section class="section-padding pt-0">
+    <section class="container">
+        <ul class="row g-4 list-unstyled">
+            {% for item in items %}
+            <li class="col-md-6 col-lg-4">
+                <article class="food-card card h-100 border-0">
+                    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                    <section class="card-body">
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <p class="text-muted small mb-1">
+                            <a href="{% url 'restaurant_detail' item.restaurant.id %}" class="text-decoration-none">
+                                <i class="fas fa-store me-1"></i>{{ item.restaurant.name }}
+                            </a>
+                        </p>
+                        <p class="text-muted small">{{ item.description }}</p>
+                        <p class="price">₹ {{ item.price }}</p>
+                    </section>
+                    <footer class="card-actions">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'add_to_cart' item.id %}" class="btn btn-primary-custom btn-sm">
+                            <i class="fas fa-cart-plus me-1"></i>Cart
+                        </a>
+                        <a href="{% url 'add_to_favorites' item.id %}" class="btn btn-outline-custom btn-sm">
+                            <i class="fas fa-heart me-1"></i>Favorite
+                        </a>
+                        {% else %}
+                        <a href="{% url 'login' %}?next={% url 'add_to_cart' item.id %}" class="btn btn-primary-custom btn-sm">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login to Order
+                        </a>
+                        {% endif %}
+                    </footer>
+                </article>
+            </li>
+            {% empty %}
+            <li class="col-12 empty-state">
+                <i class="fas fa-utensils d-block"></i>
+                <h4>Menu is empty</h4>
+                <p>No menu items available right now.</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+</section>
+{% endblock %}
